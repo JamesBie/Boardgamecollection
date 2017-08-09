@@ -1,0 +1,9 @@
+<resources>
+    <string name = "app_name">Boardgamecollection</string>
+    <string name ="set_user_name">Set User</string>
+    <string name = "set_player_count">Set Players</string>
+    <string name = "point_tracker"> Point Tracker</string>
+    <string name = "game_recommendation"> Game recommendation</string>
+    <string name = "collection_detail"> Collection Details</string>
+
+</resources>
