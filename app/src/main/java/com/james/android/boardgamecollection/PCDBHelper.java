@@ -27,14 +27,7 @@ public class PCDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String SQL_CREATE_PC_TABLE = "CREATE TABLE " + PCContract.PCEntry.TABLE_NAME + " ( " + PCContract.PCEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + PCContract.PCEntry.COLUMN_PC_NAME + " TEXT NOT NULL,"
-                + PCContract.PCEntry.COLUMN_PC_SCORE + " INTEGER NOT NULL, "
-                + PCContract.PCEntry.COLUMN_PC_TOTALTIME + " REAL);";
-        Log.i("database name", SQL_CREATE_PC_TABLE);
 
-        //Execute the SQL statement
-        db.execSQL(SQL_CREATE_PC_TABLE);
     }
     /*
         this is called when the database needs to be upgraded

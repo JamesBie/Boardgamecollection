@@ -31,7 +31,8 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Created by 100599223 on 8/7/2017.
+ * Created by 100599223 on 8/7/2017. Main activity for displaying the board game collection from
+ * board game geek. implements loaderManager so things don't interrupt the async task.
  */
 
 public class BgCollectionActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<BoardGame>> {
@@ -64,7 +65,7 @@ public class BgCollectionActivity extends AppCompatActivity implements LoaderMan
 
     @Override
     public Loader<List<BoardGame>> onCreateLoader(int i, Bundle bundle) {
-        SharedPreferences pref = getSharedPreferences("UserData", MODE_PRIVATE);
+        SharedPreferences pref = getSharedPreferences("UserData", MODE_PRIVATE); //gets username saved from useractivity
 
         mUsername = pref.getString("username","");
         INPUT_URL = "https://www.boardgamegeek.com/xmlapi2/collection?username="+mUsername+"&stats=1"+"&excludesubtype=boardgameexpansion"+"&own=1";
@@ -79,7 +80,7 @@ public class BgCollectionActivity extends AppCompatActivity implements LoaderMan
 
         boolean tableexist = true;
 try {mCursor = database.rawQuery(count,null);}// try to query table
-catch( Exception e){tableexist = false;}//if you cant query table b/c it doesnt exit create a new table
+catch( Exception e){tableexist = false;}//if you cant query table b/c it doesnt exist create a new table
 
         if (!tableexist){
             database.execSQL("CREATE TABLE " + BGContract.BGEntry.TABLE_NAME + " ( " + BGContract.BGEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -113,7 +114,7 @@ catch( Exception e){tableexist = false;}//if you cant query table b/c it doesnt 
 
     @Override
     public void onLoadFinished(Loader<List<BoardGame>> loader, List<BoardGame> boardgames) {
-        //clear adapter of previous earthquake data
+        //clear adapter of previous boardgame
         bAdapter.clear();
 
         if (boardgames != null && !boardgames.isEmpty()) {
@@ -123,7 +124,7 @@ catch( Exception e){tableexist = false;}//if you cant query table b/c it doesnt 
 
 
         }
-
+        //gives a error if boardgamegeek comes back with a 202 message (meaning its still compiling).
         if (DownloadXmlTask.BGGdelayed){
             Toast.makeText(this, "Boardgamegeek currently compiling list\n Please try again in a few minutes",Toast.LENGTH_LONG).show();
             DownloadXmlTask.BGGdelayed = false;
