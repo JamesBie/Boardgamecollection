@@ -18,12 +18,12 @@
 
     <item
         android:id="@+id/action_update_boardgame_collection"
-        android:title="Update Board Game Collection"
+        android:title="Save Board Game Collection"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_randompick_boardgame"
-        android:title=" Randomly pick a board game"
+        android:title=" Randomly Pick a Board Game"
         app:showAsAction="never" />
 
     <item

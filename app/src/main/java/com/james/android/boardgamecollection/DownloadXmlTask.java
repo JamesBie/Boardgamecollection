@@ -1,12 +1,6 @@
 package com.james.android.boardgamecollection;
 
-import android.os.AsyncTask;
 import android.util.Log;
-import android.util.Xml;
-import android.widget.Toast;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,42 +10,48 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by 100599223 on 8/8/2017. This package will download the string from the website through ASYNC TASK
  * ...Implementation through a load manager will be upcoming updates
  */
 
-public class DownloadXmlTask extends AsyncTask<URL, Void, String> {
+public class DownloadXmlTask  {
     public AsyncResponse delegate = null;
+    private DownloadXmlTask(){}
+    public static boolean BGGdelayed = false;
 
-    @Override
-    protected String doInBackground(URL... urls) {
-        URL url = createURL(INPUT_URL);
+    public static List<BoardGame> fetchXML (String requesturl){
+        Log.i("FetchXML","entering fetch xml");
+        URL url = createURL(requesturl);
         String xmlOutput = "";
+        List<BoardGame> boardgames = new ArrayList<>();
         try {
             xmlOutput = makeHttpRequest(url);
         }catch (IOException e){
             Log.e("Do in background", "problem making http request", e);
         }
-        return xmlOutput;
-    }
-    @Override
-    protected void onPostExecute (String xmlOutput){
-        if (xmlOutput == null ){
-
-            Log.v("Post Execute", "had no xml output");
+        try {
+            boardgames = ParseXML.parse(xmlOutput);
+        } catch (Exception e){
+            Log.e("parsing xml", "exception error", e);
+            boardgames = null;
         }
-        Log.v("Post execute", xmlOutput);
-        delegate.processFinish(xmlOutput);
-    }
+        return boardgames;
+        }
+
+
+
 
     //Uploads XML , parses it and combines it with HTML markup. Returns HTML string
 
-    private String makeHttpRequest (URL url) throws IOException{
+    private static String makeHttpRequest (URL url) throws IOException{
         String xmlOutput = "";
         HttpURLConnection urlConnection = null;
         InputStream inputStream = null;
+
 
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
@@ -59,12 +59,22 @@ public class DownloadXmlTask extends AsyncTask<URL, Void, String> {
             urlConnection.setReadTimeout(10000/*milliseconds*/);
             urlConnection.setConnectTimeout(15000 /* milliseconds */);
             urlConnection.connect();
+          do {
+              Log.i("NetworkActivity", "current URL code is  " + urlConnection.getResponseCode());
 
-            if (urlConnection.getResponseCode() == 200){
-                Log.i("NetworkActivity", "entered with "+ urlConnection.getResponseCode());
-                inputStream = urlConnection.getInputStream();
-                xmlOutput = readFromStream(inputStream);
-            }
+              if (urlConnection.getResponseCode() == 200) {
+                 Log.i("NetworkActivity", "entered with " + urlConnection.getResponseCode());
+                 inputStream = urlConnection.getInputStream();
+                 xmlOutput = readFromStream(inputStream);
+             } else if (urlConnection.getResponseCode() == 202) {
+                 try {
+                     Log.w("thread sleep", "thread sleeping now");
+                     Thread.sleep(1000);
+                     BGGdelayed=true;
+                 } catch (Exception e){Log.e("thread sleep", "thread sleeping error", e);}
+
+             }
+         }while(!BGGdelayed && urlConnection.getResponseCode()==202);
 
         } catch (IOException e){
             Log.e("NetworkActivity", "problem retrieving data", e);
@@ -77,61 +87,25 @@ public class DownloadXmlTask extends AsyncTask<URL, Void, String> {
             }
 
         }
+
         return xmlOutput;
     }
 
     //use async task to download the xml feed from url
-    private URL createURL (String stringURL){
+    private static URL createURL (String stringURL){
         URL url = null;
         try {
-            url = new URL(INPUT_URL);
+            url = new URL(stringURL);
 
         } catch ( MalformedURLException e){
-            Log.e("NetworkActivity.java", "Error with creating the URL", e);
+            Log.e("DownloadXmlTask", "Error with creating the URL", e);
             return null;
         }
         return url;
     }
-    public static final String WIFI = "Wi-Fi";
-    public static final String ANY = "Any";
-    private static final String INPUT_URL = "https://www.boardgamegeek.com/xmlapi2/collection?username=jamoskullis&stats=1";
 
 
-    //Whither there is a wi-fi connection
-    private static boolean wifiConnected = false;
-
-    //whether there is a mobile connection
-    private static boolean mobileConnected = false;
-
-    //Whether the display should be refreshed
-    private static boolean refreshDisplay = true;
-
-    public static String sPref = null;
-
-    public static class Items{
-        public final String name;
-        public final String player;
-
-
-        private Items (String Name, String player) {
-            this.name = Name;
-            this.player = player;
-        }
-    }
-
-
-
-    public void loadPage (URL url) {
-        if ((sPref.equals(ANY)) && (wifiConnected || mobileConnected)) {
-            new DownloadXmlTask().execute(createURL(INPUT_URL));
-        } else if ((sPref.equals(WIFI) && (wifiConnected))){
-            new DownloadXmlTask().execute(createURL(INPUT_URL));
-        } else {
-            Log.v("downloadxmltask", "downloadxml else statmeent line 129");
-
-        }
-    }
-    private String readFromStream (InputStream inputStream) throws IOException {
+    private static String readFromStream (InputStream inputStream) throws IOException {
         StringBuilder output = new StringBuilder();
         if (inputStream != null) {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));

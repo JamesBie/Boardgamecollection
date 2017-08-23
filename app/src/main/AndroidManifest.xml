@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.james.android.boardgamecollection">
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
  <application
         android:allowBackup="true"
@@ -32,8 +33,41 @@
          <meta-data
              android:name="android.support.PARENT_ACTIVITY"
              android:value=".MainActivity"/>
-
-
      </activity>
+
+     <activity android:name=".PlayerCounter"
+         android:label="Game"
+         android:parentActivityName=".MainActivity">
+         <meta-data
+             android:name="android.support.PARENT_ACTIVITY"
+             android:value=".MainActivity"/>
+     </activity>
+
+<activity android:name=".ResumeGameActivity"
+    android:label="Game"
+    android:parentActivityName=".MainActivity">
+     <meta-data
+         android:name="android.support.PARENT_ACTIVITY"
+         android:value=".MainActivity"
+         />
+     </activity>
+     <activity android:name=".PlayerCountOverview"
+         android:label="Player Overview"
+         android:parentActivityName=".MainActivity">
+         <meta-data
+             android:name="android.support.PARENT_ACTIVITY"
+             android:value=".MainActivity"
+             />
+     </activity>
+
+     <provider
+         android:authorities="com.james.android.boardgamecollection.boardgamecollection"
+         android:name=".BGProvider"
+         android:exported="false"/>
+
+     <provider
+         android:authorities="com.james.android.boardgamecollection.playergame"
+         android:name=".PCProvider"
+         android:exported="false"/>
     </application>
 </manifest>

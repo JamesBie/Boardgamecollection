@@ -1,28 +1,17 @@
 package com.james.android.boardgamecollection;
 
-import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Xml;
 
-import org.xml.sax.InputSource;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.jar.Attributes;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import static android.R.attr.tag;
 import static java.lang.System.in;
 
 /**
@@ -34,7 +23,7 @@ public class ParseXML {
     private ParseXML(){}
     private final static String ns = null;
 
-    public static List<BoardGame> parse(String xmlOutput) throws XmlPullParserException, Exception{
+    public static List<BoardGame> parse(String xmlOutput) throws Exception{
          mXMLoutput = xmlOutput;
         if(TextUtils.isEmpty(mXMLoutput)){
             Log.i ("ParseXML", "xmL output is empty");
@@ -71,7 +60,7 @@ public class ParseXML {
             }
 
             String tag = parser.getName();
-            Log.i("readfeed", "tag is " + parser.getName());
+            Log.v("readfeed", "tag is " + parser.getName());
             // starts by looking for the item tag which
             //represents each game from bgg
             if (tag.equals("item")) {
@@ -120,6 +109,8 @@ public class ParseXML {
         Log.i("XML Tags",name);
         Log.v("Stat Tag", min+" "+ max);
 
+
+
         return new BoardGame(name, Integer.parseInt(min),Integer.parseInt(max));
 
     }
@@ -137,9 +128,13 @@ public class ParseXML {
         Log.i("readTextofStats", "before if statement");
         //if (parser.next() == XmlPullParser.TEXT){
 
-
+        try {
             result.add(parser.getAttributeValue(0));
             result.add(parser.getAttributeValue(1));
+        }catch (Exception e){
+            result.add("0");
+            result.add("0");
+        }
 
             Log.i("readTextofStats", "atribute name is " + result );
 

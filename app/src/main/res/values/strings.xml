@@ -5,8 +5,6 @@
     <string name = "point_tracker"> Point Tracker</string>
     <string name = "game_recommendation"> Game recommendation</string>
     <string name = "collection_detail"> Collection Details</string>
-<<<<<<< Updated upstream
-=======
     <string name="one_player">One</string>
     <string name="two_player">Two</string>
     <string name="three_player">Three</string>
@@ -19,6 +17,5 @@
 
 
 
->>>>>>> Stashed changes
 
 </resources>
